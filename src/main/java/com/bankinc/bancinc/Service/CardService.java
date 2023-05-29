@@ -1,5 +1,6 @@
 package com.bankinc.bancinc.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Random;
 
@@ -81,7 +82,7 @@ public class CardService {
     }
 
     public Card rechargeCard(Card card){
-        Card rechargeCard = cardRepository.findById(card.getCardId()).orElse(null);
+        Card rechargeCard = getCard(card.getCardId());
         rechargeCard.setBalance(card.getBalance());
         cardRepository.save(rechargeCard);
         return rechargeCard ;
@@ -90,5 +91,31 @@ public class CardService {
     public Card getCard(Long cardId) {
         Card card = cardRepository.findById(cardId).orElse(null);
         return card;
+    }
+
+    public boolean isActivate (Card card){
+        if(card.isActivateCard() == true){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public boolean isBlock (Card card){
+        if(card.isBlock() == true){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public boolean moreThanZero(BigDecimal balance){
+        if(balance.compareTo(BigDecimal.ZERO) <= 0){
+            return false;
+        }else{
+            return true;
+        }
     }
 }

@@ -44,28 +44,44 @@ public class CardController {
     public ResponseEntity<?> activateCard(@RequestBody Card card) {
 
         Card activeCard = cardService.activeCard(card);
-        return ResponseEntity.ok(activeCard);
+        if (activeCard == null) {
+            return ResponseEntity.badRequest().body("The card don't exist or is already activate");
+        } else {
+            return ResponseEntity.ok(activeCard);
+        }
 
     }
 
     @DeleteMapping("/{cardId}")
     public ResponseEntity<?> blockCard(@PathVariable("cardId") Long cardId) {
         Card card = cardService.blockCard(cardId);
-        return ResponseEntity.ok(card);
+        if (card == null) {
+            return ResponseEntity.badRequest().body("The card don't exist or is already blocked");
+        } else {
+            return ResponseEntity.ok(card);
+        }
     }
 
     @PostMapping("/balance")
     public ResponseEntity<?> rechargeCard(@RequestBody Card card) {
         Card newCard = cardService.rechargeCard(card);
-        return ResponseEntity.ok(newCard);
+        if (newCard == null) {
+            return ResponseEntity.badRequest().body("You can't recharge, make sure is active and unblock or more than 0");
+        } else {
+            return ResponseEntity.ok(card);
+        }
     }
 
     @GetMapping("/balance/{cardId}")
     public ResponseEntity<?> checkBalance(@PathVariable("cardId") Long cardId) {
         Card card = cardService.getCard(cardId);
-       
+        if (card == null) {
+            return ResponseEntity.badRequest().body("The card don't exist");
+        } else {
             return ResponseEntity.ok(card.getBalance());
+        }
         
+
     }
 
 }
