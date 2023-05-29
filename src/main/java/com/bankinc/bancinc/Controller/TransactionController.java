@@ -24,7 +24,7 @@ public class TransactionController {
         Transaction newTransaction = transactionService.purchase(transaction);
         
         if (newTransaction == null) {
-            return ResponseEntity.badRequest().body("Make sure your card are funcional and have enought money");
+            return ResponseEntity.badRequest().body("Make sure your card is functional and has enough money");
         } else {
             return ResponseEntity.ok(newTransaction);
         }
@@ -46,7 +46,7 @@ public class TransactionController {
     public ResponseEntity<?> anulation(@RequestBody Transaction newTransaction) {
         Transaction transaction = transactionService.anulationTransaction(newTransaction);
         if (transaction == null) {
-            return ResponseEntity.badRequest().body("Make sure are less than 24h and the corret cardId");
+            return ResponseEntity.badRequest().body("Make sure it is less than 24h and the correct cardId");
         } else {
             return ResponseEntity.ok(transaction);
         }
