@@ -26,17 +26,26 @@ public class CardController {
     @Autowired
     private ProductRepository productRepository;
 
+
+    @GetMapping
+    public ResponseEntity<?> hola(){
+        return ResponseEntity.ok("Hola");
+    }
+
     @GetMapping("/{id}/number")
-    public ResponseEntity<?> generateCardId(@PathVariable("id") Long id, @RequestBody User user) {
+    public ResponseEntity<?> generateCardId(@PathVariable("id") Long id) {
+        
 
         Product product = productRepository.findById(id).orElse(null);
 
         if (product == null) {
             return ResponseEntity.badRequest().body("Product doesn't exist");
         } else {
-            Card card = cardService.generateCard(user, product);
+            Card card = cardService.generateCard(product);
             return ResponseEntity.ok(card);
         }
+
+        
 
     }
 

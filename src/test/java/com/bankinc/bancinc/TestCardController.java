@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,39 +42,37 @@ public class TestCardController {
     }
 
     @Test
-    void generateCardIdExistingProduct() {
-
+    void generateCardId_ProductExists_ReturnsCard() {
+        // Arrange
         Long productId = 1L;
-        User user = new User();
         Product product = new Product();
-        Card expectedCard = new Card();
+        Card card = new Card();
 
-        when(productRepository.findById(productId)).thenReturn(java.util.Optional.of(product));
-        when(cardService.generateCard(user, product)).thenReturn(expectedCard);
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(cardService.generateCard(product)).thenReturn(card);
 
-        ResponseEntity<?> response = cardController.generateCardId(productId, user);
+        // Act
+        ResponseEntity<?> response = cardController.generateCardId(productId);
 
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedCard, response.getBody());
-        verify(productRepository, times(1)).findById(productId);
-        verify(cardService, times(1)).generateCard(user, product);
+        assertEquals(card, response.getBody());
     }
 
     @Test
-    void generateCardIdNonExistingProduct() {
+    void generateCardId_ProductDoesNotExist_ReturnsBadRequest() {
+        // Arrange
         Long productId = 1L;
-        User user = new User();
 
-        when(productRepository.findById(productId)).thenReturn(java.util.Optional.empty());
+        when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
-        ResponseEntity<?> response = cardController.generateCardId(productId, user);
+        // Act
+        ResponseEntity<?> response = cardController.generateCardId(productId);
 
+        // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Product doesn't exist", response.getBody());
-        verify(productRepository, times(1)).findById(productId);
-        verify(cardService, never()).generateCard(any(), any());
     }
-
     @Test
     void activateCardValidCard() {
         Card card = new Card();

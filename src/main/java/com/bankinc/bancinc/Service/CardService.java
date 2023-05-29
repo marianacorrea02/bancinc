@@ -22,9 +22,10 @@ public class CardService {
     @Autowired
     private CardRepository cardRepository;
 
-    public Card generateCard(User user, Product product) {
+    public Card generateCard(Product product) {
         Long randomNumber = generateCardId(product.getProductId());
-        User newUser = createUser(user);
+        User newUser = new User("Mariana", "Correa");
+        userRepository.save(newUser);
         LocalDate dueDate = generateDueDate();
         Card card = new Card();
         card.setCardId(randomNumber);
@@ -49,15 +50,6 @@ public class CardService {
             return number;
         }
         return null;
-    }
-
-    public User createUser(User user) {
-
-        User newUser = new User(user.getName(), user.getLastName());
-
-        userRepository.save(newUser);
-
-        return newUser;
     }
 
     public LocalDate generateDueDate() {

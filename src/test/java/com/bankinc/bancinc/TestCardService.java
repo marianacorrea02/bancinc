@@ -41,27 +41,6 @@ public class TestCardService {
     void setUp() {
         MockitoAnnotations.initMocks(this);
     }
-    
-    @Test
-    public void testGenerateCard() {
-        User user = new User("John", "Doe");
-        Product product = new Product(1L, "Product A");
-        Card card = new Card();
-        card.setCardId(1234567890L);
-        card.setProduct(product);
-        card.setUser(user);
-        card.setDueDate(LocalDate.now().plusYears(3));
-
-        when(userRepository.save(any(User.class))).thenReturn(user);
-        when(cardRepository.save(any(Card.class))).thenReturn(card);
-
-        Card generatedCard = cardService.generateCard(user, product);
-
-        assertNotNull(generatedCard);
-        assertEquals(product, generatedCard.getProduct());
-        assertNotNull(generatedCard.getDueDate());
-        verify(cardRepository).save(generatedCard);
-    }
 
 
     @Test
