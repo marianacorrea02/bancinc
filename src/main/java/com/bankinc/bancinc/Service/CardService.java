@@ -22,11 +22,11 @@ public class CardService {
     @Autowired
     private CardRepository cardRepository;
 
-    public Card generateCard(Long productId, User user, Product product) {
-        Long randomNumber = generateCardId(productId);
-        User newUser = createUser(user); 
+    public Card generateCard(User user, Product product) {
+        Long randomNumber = generateCardId(product.getProductId());
+        User newUser = createUser(user);
         LocalDate dueDate = generateDueDate();
-        Card card =new Card();
+        Card card = new Card();
         card.setCardId(randomNumber);
         card.setProduct(product);
         card.setUser(newUser);
@@ -35,7 +35,7 @@ public class CardService {
         return card;
     }
 
-    public Long generateCardId(Long id){
+    public Long generateCardId(Long id) {
         Random random = new Random();
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 10; i++) {
@@ -45,20 +45,22 @@ public class CardService {
         String randomNumber = id + sb.toString();
         Long number = Long.parseLong(randomNumber);
 
-        return number;
-
+        if (getCard(number) == null) {
+            return number;
+        }
+        return null;
     }
 
-    public User createUser(User user){
-        
-        User newUser = new User(user.getName(),user.getLastName());
+    public User createUser(User user) {
+
+        User newUser = new User(user.getName(), user.getLastName());
 
         userRepository.save(newUser);
 
         return newUser;
     }
 
-    public LocalDate generateDueDate(){
+    public LocalDate generateDueDate() {
 
         LocalDate today = LocalDate.now();
         LocalDate dueDate = today.plusYears(3).withDayOfMonth(31);
@@ -66,56 +68,68 @@ public class CardService {
         return dueDate;
     }
 
-    public Card activeCard(Card card){
+    public Card activeCard(Card card) {
 
-        Card activeCard = cardRepository.findById(card.getCardId()).orElse(null);
-        activeCard.setActivateCard(true);
-        cardRepository.save(activeCard);
-        return activeCard;
-    } 
-
-    public Card blockCard(Long id){
-        Card blockCard = cardRepository.findById(id).orElse(null);
-        blockCard.setBlock(true);
-        cardRepository.save(blockCard);
-        return blockCard;
+        Card activeCard = getCard(card.getCardId());
+        if (activeCard == null || isActivate(activeCard)) {
+            return null;
+        } else {
+            activeCard.setActivateCard(true);
+            cardRepository.save(activeCard);
+            return activeCard;
+        }
     }
 
-    public Card rechargeCard(Card card){
+    public Card blockCard(Long id) {
+        Card blockCard = cardRepository.findById(id).orElse(null);
+        if (blockCard == null || isBlock(blockCard)) {
+            return null;
+        } else {
+            blockCard.setBlock(true);
+            cardRepository.save(blockCard);
+            return blockCard;
+        }
+    }
+
+    public Card rechargeCard(Card card) {
         Card rechargeCard = getCard(card.getCardId());
-        rechargeCard.setBalance(card.getBalance());
+        if(rechargeCard == null || isBlock(rechargeCard) || isActivate(rechargeCard)==false || moreThanZero(card.getBalance()) == false ){
+            System.out.println(moreThanZero(card.getBalance()));
+            return null;
+        }else{
+        rechargeCard.setBalance(rechargeCard.getBalance().add(card.getBalance()));
         cardRepository.save(rechargeCard);
-        return rechargeCard ;
+        return rechargeCard;
+        }
     }
 
     public Card getCard(Long cardId) {
         Card card = cardRepository.findById(cardId).orElse(null);
+
         return card;
     }
 
-    public boolean isActivate (Card card){
-        if(card.isActivateCard() == true){
+    public boolean isActivate(Card card) {
+        if (card.isActivateCard() == true) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public boolean isBlock (Card card){
-        if(card.isBlock() == true){
+    public boolean isBlock(Card card) {
+        if (card.isBlock() == true) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public boolean moreThanZero(BigDecimal balance){
-        if(balance.compareTo(BigDecimal.ZERO) <= 0){
-            return false;
-        }else{
+    public boolean moreThanZero(BigDecimal balance) {
+        if (balance.compareTo(BigDecimal.ZERO) > 0) {
             return true;
+        } else {
+            return false;
         }
     }
 }

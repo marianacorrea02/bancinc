@@ -34,7 +34,7 @@ public class CardController {
         if (product == null) {
             return ResponseEntity.badRequest().body("Product doesn't exist");
         } else {
-            Card card = cardService.generateCard(id, user, product);
+            Card card = cardService.generateCard(user, product);
             return ResponseEntity.ok(card);
         }
 
@@ -68,7 +68,7 @@ public class CardController {
         if (newCard == null) {
             return ResponseEntity.badRequest().body("You can't recharge, make sure is active and unblock or more than 0");
         } else {
-            return ResponseEntity.ok(card);
+            return ResponseEntity.ok(newCard);
         }
     }
 
