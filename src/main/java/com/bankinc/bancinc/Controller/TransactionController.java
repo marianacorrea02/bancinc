@@ -22,7 +22,13 @@ public class TransactionController {
     @PostMapping("/purchase")
     public ResponseEntity<?> purchase(@RequestBody Transaction transaction) {
         Transaction newTransaction = transactionService.purchase(transaction);
-        return ResponseEntity.ok(newTransaction);
+        
+        if (newTransaction == null) {
+            return ResponseEntity.badRequest().body("Make sure your card are funcional and have enought money");
+        } else {
+            return ResponseEntity.ok(newTransaction);
+        }
+
     }
 
     @GetMapping("/{transactionId}")
@@ -38,14 +44,12 @@ public class TransactionController {
 
     @PostMapping("/anulation")
     public ResponseEntity<?> anulation(@RequestBody Transaction newTransaction) {
-        Transaction transaction = transactionService.getTransaction(newTransaction.getTransactionId());
+        Transaction transaction = transactionService.anulationTransaction(newTransaction);
         if (transaction == null) {
-            return ResponseEntity.badRequest().body("The transactionId doesn't exist");
+            return ResponseEntity.badRequest().body("Make sure are less than 24h and the corret cardId");
         } else {
-            transaction = transactionService.anulationTransaction(transaction);
             return ResponseEntity.ok(transaction);
         }
     }
 
-    
 }

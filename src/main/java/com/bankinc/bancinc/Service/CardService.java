@@ -93,14 +93,25 @@ public class CardService {
 
     public Card rechargeCard(Card card) {
         Card rechargeCard = getCard(card.getCardId());
-        if(rechargeCard == null || isBlock(rechargeCard) || isActivate(rechargeCard)==false || moreThanZero(card.getBalance()) == false ){
-            System.out.println(moreThanZero(card.getBalance()));
+        if(rechargeCard == null || canUse(rechargeCard)==false || moreThanZero(card.getBalance()) == false ){
+            System.out.println( canUse(rechargeCard));
             return null;
         }else{
         rechargeCard.setBalance(rechargeCard.getBalance().add(card.getBalance()));
         cardRepository.save(rechargeCard);
         return rechargeCard;
         }
+    }
+
+    public boolean canUse(Card card){
+
+        if(isBlock(card) || isActivate(card) == false){
+            return false;
+        }
+        else{
+            return true;
+        }
+
     }
 
     public Card getCard(Long cardId) {
