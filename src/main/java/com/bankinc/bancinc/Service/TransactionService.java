@@ -70,7 +70,7 @@ public class TransactionService {
     public Transaction anulationTransaction(Transaction transaction) {
         Transaction anuleTransaction = getTransaction(transaction.getTransactionId());
         Card card = cardRepository.findById(transaction.getCardId().getCardId()).orElse(null);
-        if (anuleTransaction == null || cardTransaction(transaction) == false || isLate(anuleTransaction.getPurchaseDate())) {
+        if (anuleTransaction == null || cardTransaction(transaction) == false || isLate(anuleTransaction.getPurchaseDate(), getPurchaseDate())) {
             return null;
         } else {
 
@@ -83,9 +83,8 @@ public class TransactionService {
         }
     }
 
-    public boolean isLate(LocalDateTime purchaseDate) {
-        LocalDateTime currDateTime = getPurchaseDate();
-        long hoursDifference = ChronoUnit.HOURS.between(purchaseDate, currDateTime);
+    public boolean isLate(LocalDateTime purchaseDate, LocalDateTime currentDataTime) {
+        long hoursDifference = ChronoUnit.HOURS.between(purchaseDate, currentDataTime);
         if (hoursDifference > 24) {
             return true;
         } else {
@@ -95,7 +94,6 @@ public class TransactionService {
     }
 
     public boolean cardTransaction(Transaction transaction) {
-        System.out.println(transaction.getCardId().getCardId());
         Transaction newTransaction = getTransaction(transaction.getTransactionId());
         Card card = cardService.getCard(transaction.getCardId().getCardId());
         if (newTransaction.getCardId().equals(card)) {
@@ -106,4 +104,5 @@ public class TransactionService {
         }
     }
 
+    
 }
